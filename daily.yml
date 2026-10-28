@@ -1,0 +1,34 @@
+name: Daily soccer analysis
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 09:00 UTC = 12:00 East Africa Time; scheduled jobs may be delayed by GitHub.
+    - cron: "0 9 * * *"
+
+permissions:
+  contents: read
+
+jobs:
+  predict:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run analysis
+        run: python api_football_daily.py --date today --outdir output
+      - name: Upload reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: soccer-value-report
+          path: output/
+          if-no-files-found: error
+          retention-days: 14
