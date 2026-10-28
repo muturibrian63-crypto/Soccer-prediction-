@@ -1,2 +1,0 @@
-# Soccer-prediction-
-Soccer prediction 
